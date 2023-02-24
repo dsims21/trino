@@ -23,15 +23,7 @@ import io.trino.metadata.SqlScalarFunction;
 import io.trino.operator.aggregation.TypedSet;
 import io.trino.spi.TrinoException;
 import io.trino.spi.block.Block;
-import io.trino.spi.function.Convention;
-import io.trino.spi.function.Description;
-import io.trino.spi.function.LiteralParameter;
-import io.trino.spi.function.LiteralParameters;
-import io.trino.spi.function.OperatorDependency;
-import io.trino.spi.function.ScalarFunction;
-import io.trino.spi.function.Signature;
-import io.trino.spi.function.SqlNullable;
-import io.trino.spi.function.SqlType;
+import io.trino.spi.function.*;
 import io.trino.spi.type.Decimals;
 import io.trino.spi.type.Int128;
 import io.trino.spi.type.StandardTypes;
@@ -57,11 +49,7 @@ import static io.trino.spi.function.OperatorType.HASH_CODE;
 import static io.trino.spi.type.Decimals.longTenToNth;
 import static io.trino.spi.type.Decimals.overflows;
 import static io.trino.spi.type.DoubleType.DOUBLE;
-import static io.trino.spi.type.Int128Math.add;
-import static io.trino.spi.type.Int128Math.negate;
-import static io.trino.spi.type.Int128Math.rescale;
-import static io.trino.spi.type.Int128Math.rescaleTruncate;
-import static io.trino.spi.type.Int128Math.subtract;
+import static io.trino.spi.type.Int128Math.*;
 import static io.trino.spi.type.VarcharType.VARCHAR;
 import static io.trino.type.DecimalOperators.modulusScalarFunction;
 import static io.trino.type.DecimalOperators.modulusSignatureBuilder;
@@ -1401,28 +1389,26 @@ public final class MathFunctions
 
     @Description("Black-Scholes equation for a Euro vanilla call option")
     @ScalarFunction
-    @SqlType(StandardTypes.BIGINT)
-    public static double blackScholesEuroVanillaCall(@SqlType(StandardTypes.BIGINT) long S, @SqlType(StandardTypes.BIGINT) long K, @SqlType(StandardTypes.BIGINT) long T, @SqlType(StandardTypes.BIGINT) long r, @SqlType(StandardTypes.BIGINT) long sigma)
-    {
+    @SqlType(StandardTypes.DOUBLE)
+    public static double blackScholesEuroVanillaCall(@SqlType(StandardTypes.DOUBLE) double S, @SqlType(StandardTypes.DOUBLE) double K, @SqlType(StandardTypes.DOUBLE) double T, @SqlType(StandardTypes.DOUBLE) double r, @SqlType(StandardTypes.DOUBLE) double sigma) {
 
-        long d1 = (Math.log(S / K) + (r + 0.5 * Math.pow(sigma, 2)) * T) / (sigma * Math.sqrt(T));
-        long d2 = (Math.log(S / K) + (r - 0.5 * Math.pow(sigma, 2)) * T) / (sigma * Math.sqrt(T));
+        double d1 = (Math.log(S / K) + (r + 0.5 * Math.pow(sigma, 2)) * T) / (sigma * Math.sqrt(T));
+        double d2 = (Math.log(S / K) + (r - 0.5 * Math.pow(sigma, 2)) * T) / (sigma * Math.sqrt(T));
 
-        long call = (S * normalCdf(0.0, 1.0, d1) - K * Math.exp(-r * T) * normalCdf(0.0, 1.0, d2));
+        double call = (S * normalCdf(0.0, 1.0, d1) - K * Math.exp(-r * T) * normalCdf(0.0, 1.0, d2));
 
         return call;
     }
 
     @Description("Black-Scholes equation for a Euro vanilla put option")
     @ScalarFunction
-    @SqlType(StandardTypes.BIGINT)
-    public static double blackScholesEuroVanillaPut(@SqlType(StandardTypes.BIGINT) long S, @SqlType(StandardTypes.BIGINT) long K, @SqlType(StandardTypes.BIGINT) long T, @SqlType(StandardTypes.BIGINT) long r, @SqlType(StandardTypes.BIGINT) long sigma)
-    {
+    @SqlType(StandardTypes.DOUBLE)
+    public static double blackScholesEuroVanillaPut(@SqlType(StandardTypes.DOUBLE) double S, @SqlType(StandardTypes.DOUBLE) double K, @SqlType(StandardTypes.DOUBLE) double T, @SqlType(StandardTypes.DOUBLE) double r, @SqlType(StandardTypes.DOUBLE) double sigma) {
 
-        long d1 = (Math.log(S / K) + (r + 0.5 * Math.pow(sigma, 2)) * T) / (sigma * Math.sqrt(T));
-        long d2 = (Math.log(S / K) + (r - 0.5 * Math.pow(sigma, 2)) * T) / (sigma * Math.sqrt(T));
+        double d1 = (Math.log(S / K) + (r + 0.5 * Math.pow(sigma, 2)) * T) / (sigma * Math.sqrt(T));
+        double d2 = (Math.log(S / K) + (r - 0.5 * Math.pow(sigma, 2)) * T) / (sigma * Math.sqrt(T));
 
-        long put = ((K * Math.exp(-r * T)) * (normalCdf(0.0, 1.0, -d2)) - (S * normalCdf(0.0, 1.0, -d1)));
+        double put = ((K * Math.exp(-r * T)) * (normalCdf(0.0, 1.0, -d2)) - (S * normalCdf(0.0, 1.0, -d1)));
 
         return put;
     }

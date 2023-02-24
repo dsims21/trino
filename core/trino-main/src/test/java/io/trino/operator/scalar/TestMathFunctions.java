@@ -21,9 +21,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import static io.trino.spi.StandardErrorCode.DIVISION_BY_ZERO;
-import static io.trino.spi.StandardErrorCode.NUMERIC_VALUE_OUT_OF_RANGE;
-import static io.trino.spi.StandardErrorCode.TOO_MANY_ARGUMENTS;
+import static io.trino.spi.StandardErrorCode.*;
 import static io.trino.spi.type.BigintType.BIGINT;
 import static io.trino.spi.type.BooleanType.BOOLEAN;
 import static io.trino.spi.type.DecimalType.createDecimalType;
@@ -3541,8 +3539,7 @@ public class TestMathFunctions
     }
 
     @Test
-    public void testWilsonInterval()
-    {
+    public void testWilsonInterval() {
         assertTrinoExceptionThrownBy(() -> assertions.function("wilson_interval_lower", "-1", "100", "2.575").evaluate())
                 .hasMessage("number of successes must not be negative");
 
@@ -3570,6 +3567,18 @@ public class TestMathFunctions
         assertTrinoExceptionThrownBy(() -> assertions.function("wilson_interval_upper", "0", "100", "-1").evaluate())
                 .hasMessage("z-score must not be negative");
 
+        assertThat(assertions.function("wilson_interval_upper", "1250", "1310", "1.96e0"))
+                .isEqualTo(0.9642524717143908);
+    }
+
+    @Test
+    public void testBlackScholesCall() {
+        assertThat(assertions.function("wilson_interval_upper", "1250", "1310", "1.96e0"))
+                .isEqualTo(0.9642524717143908);
+    }
+
+    @Test
+    public void testBlackScholesPut() {
         assertThat(assertions.function("wilson_interval_upper", "1250", "1310", "1.96e0"))
                 .isEqualTo(0.9642524717143908);
     }
