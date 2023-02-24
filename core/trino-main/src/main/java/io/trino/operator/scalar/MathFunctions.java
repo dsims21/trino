@@ -1398,4 +1398,32 @@ public final class MathFunctions
 
         return Math.sqrt(norm);
     }
+
+    @Description("Black-Scholes equation for a Euro vanilla call option")
+    @ScalarFunction
+    @SqlType(StandardTypes.BIGINT)
+    public static double blackScholesEuroVanillaCall(@SqlType(StandardTypes.BIGINT) long S, @SqlType(StandardTypes.BIGINT) long K, @SqlType(StandardTypes.BIGINT) long T, @SqlType(StandardTypes.BIGINT) long r, @SqlType(StandardTypes.BIGINT) long sigma)
+    {
+
+        long d1 = (Math.log(S / K) + (r + 0.5 * Math.pow(sigma, 2)) * T) / (sigma * Math.sqrt(T));
+        long d2 = (Math.log(S / K) + (r - 0.5 * Math.pow(sigma, 2)) * T) / (sigma * Math.sqrt(T));
+
+        long call = (S * normalCdf(0.0, 1.0, d1) - K * Math.exp(-r * T) * normalCdf(0.0, 1.0, d2));
+
+        return call;
+    }
+
+    @Description("Black-Scholes equation for a Euro vanilla put option")
+    @ScalarFunction
+    @SqlType(StandardTypes.BIGINT)
+    public static double blackScholesEuroVanillaPut(@SqlType(StandardTypes.BIGINT) long S, @SqlType(StandardTypes.BIGINT) long K, @SqlType(StandardTypes.BIGINT) long T, @SqlType(StandardTypes.BIGINT) long r, @SqlType(StandardTypes.BIGINT) long sigma)
+    {
+
+        long d1 = (Math.log(S / K) + (r + 0.5 * Math.pow(sigma, 2)) * T) / (sigma * Math.sqrt(T));
+        long d2 = (Math.log(S / K) + (r - 0.5 * Math.pow(sigma, 2)) * T) / (sigma * Math.sqrt(T));
+
+        long put = ((K * Math.exp(-r * T)) * (normalCdf(0.0, 1.0, -d2)) - (S * normalCdf(0.0, 1.0, -d1)));
+
+        return put;
+    }
 }
