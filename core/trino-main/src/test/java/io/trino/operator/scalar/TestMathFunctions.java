@@ -3572,14 +3572,14 @@ public class TestMathFunctions
     }
 
     @Test
-    public void testBlackScholesCall() {
-        assertThat(assertions.function("wilson_interval_upper", "1250", "1310", "1.96e0"))
-                .isEqualTo(0.9642524717143908);
+    public void testBlackScholesEuroVanillaCall() {
+        assertThat(assertions.function("black_scholes_euro_vanilla_call", "500", "450", "1", ".05", ".15"))
+                .isEqualTo(77.33579531627726);
     }
 
     @Test
-    public void testBlackScholesPut() {
-        assertThat(assertions.function("wilson_interval_upper", "1250", "1310", "1.96e0"))
-                .isEqualTo(0.9642524717143908);
+    public void testBlackScholesEuroVanillaPut() {
+        assertThat(assertions.function("black_scholes_euro_vanilla_call", "450", "500", "1", ".05", ".15"))
+                .isEqualTo(42.335680830637045);
     }
 }
